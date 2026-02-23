@@ -1,10 +1,13 @@
-import { Component } from "@angular/core";
+import { Component, signal } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { form, FormField, minLength, required } from "@angular/forms/signals";
 import { RouterLink } from "@angular/router";
 import { Button } from "../../shared/components/button";
+import { FormErrors } from "../../shared/components/form-errors";
 
 @Component({
     selector: 'app-login',
-    imports: [Button, RouterLink],
+    imports: [Button, RouterLink, FormField, FormsModule, FormErrors],
     template: ` <div class="w-full max-w-md p-8 bg-white rounded-2xl shadow-xl">
     <h1 class="text-2xl font-bold text-center text-slate-900 mb-8">Sign In</h1>
 
@@ -17,9 +20,11 @@ import { Button } from "../../shared/components/button";
           id="username"
           type="text"
           autocomplete="username"
+          [formField]="loginForm.username"
           class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition-shadow"
           placeholder="Enter your username"
         />
+        <app-form-errors [control]="loginForm.username()" />
       </div>
 
       <div>
@@ -30,9 +35,11 @@ import { Button } from "../../shared/components/button";
           id="password"
           type="password"
           autocomplete="current-password"
+          [formField]="loginForm.password"
           class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition-shadow"
           placeholder="Enter your password"
         />
+        <app-form-errors [control]="loginForm.password()" />
       </div>
 
       <button size="lg" appButton type="submit" class="w-full">Sign In</button>
@@ -49,7 +56,18 @@ import { Button } from "../../shared/components/button";
 })
 export class Login {
 
+    loginModel = signal({ username: '', password: '' });
+
+    loginForm = form(this.loginModel, (rootPath) => {
+        required(rootPath.username, { message: "Username is required" })
+        required(rootPath.password, { message: "password is required" })
+        minLength(rootPath.password, 6, { message: "Password must be at least 6 characters long" })
+    });
+
     onSubmit(event: Event) {
         event.preventDefault();
+        if (this.loginForm().valid()) {
+            console.log(this.loginForm().value());
+        }
     }
 }
