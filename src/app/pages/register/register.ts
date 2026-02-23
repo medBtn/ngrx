@@ -1,18 +1,18 @@
 import { Component, signal } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { form, FormField, minLength, required, validate } from "@angular/forms/signals";
+import { form, FormField } from "@angular/forms/signals";
 import { RouterLink } from "@angular/router";
 import { Button } from "../../shared/components/button";
 import { FormErrors } from "../../shared/components/form-errors";
+import { RegisterSchema } from "./register-schema";
 
 @Component({
     selector: 'app-register',
-    imports: [Button, RouterLink, FormErrors, FormsModule, FormField],
+    imports: [Button, RouterLink, FormErrors, FormField],
     template: `
   <div class="w-full max-w-md p-8 bg-white rounded-2xl shadow-xl">
       <h1 class="text-2xl font-bold text-center text-slate-900 mb-8">Register</h1>
 
-      <form (ngSubmit)="onSubmit($event)" class="space-y-6">
+      <form class="space-y-6">
         <div>
           <label for="username" class="block text-sm font-medium text-slate-700 mb-2">
             Username
@@ -71,7 +71,7 @@ import { FormErrors } from "../../shared/components/form-errors";
           <app-form-errors [control]="registerForm.confirmPassword()" />
         </div>
 
-        <button (click)="onSubmit($event)"  appButton type="submit" class="w-full">
+        <button (click)="onSubmit($event)" [disabled]="registerForm().invalid()" appButton type="submit" class="w-full">
           Register
         </button>
 
@@ -90,23 +90,7 @@ export class Register {
 
     registerModel = signal({ username: '', email: '', password: '', confirmPassword: '' });
 
-    registerForm = form(this.registerModel, (rootPath) => {
-        required(rootPath.username, { message: "Username is required" })
-        required(rootPath.email, { message: "Email is required" })
-        required(rootPath.password, { message: "Password is required" })
-        required(rootPath.confirmPassword, { message: "Confirm Password is required" })
-        minLength(rootPath.password, 6, { message: "Password must be at least 6 characters long" })
-        validate(rootPath.confirmPassword, ({ value, valueOf }) => {
-            const password = valueOf(rootPath.password);
-            const confirmPassword = value();
-            if (!password) return null;
-            if (confirmPassword !== password) return {
-                kind: 'passwordMismatch',
-                message: 'Passwords do not match'
-            }
-            return null;
-        })
-    });
+    registerForm = form(this.registerModel, RegisterSchema);
 
     onSubmit(event: Event) {
         event.preventDefault();

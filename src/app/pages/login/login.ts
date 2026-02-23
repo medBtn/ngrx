@@ -42,7 +42,7 @@ import { FormErrors } from "../../shared/components/form-errors";
         <app-form-errors [control]="loginForm.password()" />
       </div>
 
-      <button size="lg" appButton type="submit" class="w-full">Sign In</button>
+      <button size="lg" appButton type="submit" [disabled]="loginForm().invalid()" class="w-full">Sign In</button>
 
       <p class="text-sm text-center text-slate-500 mt-4">
         Don't have an account?
