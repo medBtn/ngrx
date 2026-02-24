@@ -3,7 +3,26 @@ import { Component } from "@angular/core";
 @Component({
     selector: 'app-footer',
     template: `
-    <h1>Footer</h1>
+        <div class="w-full px-4 py-6 bg-slate-800 text-slate-400 mt-auto">
+      <div class="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+        <p class="text-sm">&copy; 2025 FakeStore. All rights reserved.</p>
+
+        <nav aria-label="Footer navigation">
+          <ul class="flex items-center gap-6 text-sm">
+            <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+          </ul>
+        </nav>
+
+        <!-- <div class="flex items-center gap-4">
+          <a href="#" aria-label="GitHub" class="hover:text-white transition-colors">
+          </a>
+          <a href="#" aria-label="Twitter" class="hover:text-white transition-colors">
+          </a>
+        </div> -->
+      </div>
+    </div>
     `
 })
 export class Footer {
