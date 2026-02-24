@@ -65,7 +65,7 @@ export class Login {
   private readonly store = inject(Store);
   readonly isLoading = toSignal(this.store.select(authFeature.selectIsLoading));
 
-  loginModel = signal({ username: '', password: '' });
+  loginModel = signal({ username: 'kevinryan', password: 'kev02937@' });
 
   loginForm = form(this.loginModel, (rootPath) => {
     required(rootPath.username, { message: "Username is required" })
