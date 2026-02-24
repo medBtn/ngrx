@@ -1,11 +1,12 @@
 import { Component, inject } from "@angular/core";
 import { Router, RouterLink } from "@angular/router";
+import { LogOut, LucideAngularModule, ShoppingCartIcon, User } from 'lucide-angular';
 import { Button } from "../../shared/components/button";
 import { Storage } from "../../shared/services/storage";
 
 @Component({
     selector: 'app-header',
-    imports: [RouterLink, Button],
+    imports: [RouterLink, Button, LucideAngularModule],
     template: `
     <div class="sticky top-0 z-50 w-full px-4 py-3 bg-slate-900 text-white shadow-lg">
       <nav class="container mx-auto flex items-center justify-between">
@@ -19,6 +20,7 @@ import { Storage } from "../../shared/services/storage";
             (click)="logout()"
             class="text-white hover:text-gray-300 hover:bg-white/10"
           >
+          <lucide-icon [img]="icons.Logout" class="size-5 text-amber-600 mr-2" />
             Logout
           </button>
           <button
@@ -28,6 +30,7 @@ import { Storage } from "../../shared/services/storage";
             type="button"
             class="text-white hover:bg-white/10"
           >
+          <lucide-icon [img]="icons.User" class="size-5 text-amber-600 mr-2" />
             Profile
           </button>
           <button
@@ -37,7 +40,7 @@ import { Storage } from "../../shared/services/storage";
             class="relative text-white hover:bg-white/10"
             routerLink="/cart"
           >
-          Cart 
+          <lucide-icon [img]="icons.Cart" class="size-5 text-amber-600 mr-2" />
           <span
               class="absolute -top-1 -right-1 size-5 flex items-center justify-center bg-amber-500 text-xs font-medium rounded-full"
             >
@@ -50,6 +53,12 @@ import { Storage } from "../../shared/services/storage";
   `,
 })
 export class Header {
+
+    readonly icons = {
+        Logout: LogOut,
+        User: User,
+        Cart: ShoppingCartIcon
+    };
 
     readonly storage = inject(Storage);
     readonly router = inject(Router);
