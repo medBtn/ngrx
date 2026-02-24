@@ -32,7 +32,7 @@ export class AuthApi {
     }
 
     register(request: RegisterRequest): Observable<RegisterRequest> {
-        return this.http.post<RegisterRequest>(`${this.baseApiUrl}/auth/register`, request);
+        return this.http.post<RegisterRequest>(`${this.baseApiUrl}/users`, request);
     }
 
 }

@@ -1,14 +1,19 @@
-import { Component, signal } from "@angular/core";
+import { Component, inject, signal } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { form, FormField } from "@angular/forms/signals";
 import { RouterLink } from "@angular/router";
+import { Store } from "@ngrx/store";
 import { Button } from "../../shared/components/button";
 import { FormErrors } from "../../shared/components/form-errors";
+import { RegisterRequest } from "../../shared/services/auth-api";
+import { authActions } from "../../shared/store/auth-actions";
+import { authFeature } from "../../shared/store/auth-feature";
 import { RegisterSchema } from "./register-schema";
 
 @Component({
-    selector: 'app-register',
-    imports: [Button, RouterLink, FormErrors, FormField],
-    template: `
+  selector: 'app-register',
+  imports: [Button, RouterLink, FormErrors, FormField],
+  template: `
   <div class="w-full max-w-md p-8 bg-white rounded-2xl shadow-xl">
       <h1 class="text-2xl font-bold text-center text-slate-900 mb-8">Register</h1>
 
@@ -71,8 +76,8 @@ import { RegisterSchema } from "./register-schema";
           <app-form-errors [control]="registerForm.confirmPassword()" />
         </div>
 
-        <button (click)="onSubmit($event)" [disabled]="registerForm().invalid()" appButton type="submit" class="w-full">
-          Register
+        <button (click)="onSubmit($event)" [disabled]="registerForm().invalid() || isLoading()" appButton type="submit" class="w-full">
+          {{ isLoading() ? 'Registering...' : 'Register' }}
         </button>
 
         <p class="text-sm text-center text-slate-500 mt-4">
@@ -81,21 +86,26 @@ import { RegisterSchema } from "./register-schema";
         </p>
       </form>
     </div>`,
-    host: {
-        class: 'min-h-screen flex items-center justify-center bg-slate-100 p-4'
-    }
+  host: {
+    class: 'min-h-screen flex items-center justify-center bg-slate-100 p-4'
+  }
 })
 export class Register {
 
+  private readonly store = inject(Store);
+  readonly isLoading = toSignal(this.store.select(authFeature.selectIsLoading));
 
-    registerModel = signal({ username: '', email: '', password: '', confirmPassword: '' });
+  registerModel = signal({ username: '', email: '', password: '', confirmPassword: '' });
 
-    registerForm = form(this.registerModel, RegisterSchema);
+  registerForm = form(this.registerModel, RegisterSchema);
 
-    onSubmit(event: Event) {
-        event.preventDefault();
-        if (this.registerForm().valid()) {
-            console.log(this.registerForm().value());
-        }
+  onSubmit(event: Event) {
+    event.preventDefault();
+    if (this.registerForm().valid()) {
+      const id = Date.now();
+      const { confirmPassword, ...rest } = this.registerForm().value();
+      const RegisterRequest: RegisterRequest = { id, ...rest };
+      this.store.dispatch(authActions.register(RegisterRequest));
     }
+  }
 }

@@ -1,14 +1,18 @@
-import { Component, signal } from "@angular/core";
+import { Component, inject, signal } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { FormsModule } from "@angular/forms";
 import { form, FormField, minLength, required } from "@angular/forms/signals";
 import { RouterLink } from "@angular/router";
+import { Store } from "@ngrx/store";
 import { Button } from "../../shared/components/button";
 import { FormErrors } from "../../shared/components/form-errors";
+import { authActions } from "../../shared/store/auth-actions";
+import { authFeature } from "../../shared/store/auth-feature";
 
 @Component({
-    selector: 'app-login',
-    imports: [Button, RouterLink, FormField, FormsModule, FormErrors],
-    template: ` <div class="w-full max-w-md p-8 bg-white rounded-2xl shadow-xl">
+  selector: 'app-login',
+  imports: [Button, RouterLink, FormField, FormsModule, FormErrors],
+  template: ` <div class="w-full max-w-md p-8 bg-white rounded-2xl shadow-xl">
     <h1 class="text-2xl font-bold text-center text-slate-900 mb-8">Sign In</h1>
 
     <form (ngSubmit)="onSubmit($event)" class="space-y-6">
@@ -42,7 +46,9 @@ import { FormErrors } from "../../shared/components/form-errors";
         <app-form-errors [control]="loginForm.password()" />
       </div>
 
-      <button size="lg" appButton type="submit" [disabled]="loginForm().invalid()" class="w-full">Sign In</button>
+      <button size="lg" appButton type="submit" [disabled]="loginForm().invalid() || isLoading()" class="w-full">
+       {{ isLoading() ? 'Signing in...' : 'Sign In' }}
+      </button>
 
       <p class="text-sm text-center text-slate-500 mt-4">
         Don't have an account?
@@ -50,24 +56,27 @@ import { FormErrors } from "../../shared/components/form-errors";
       </p>
     </form>
   </div>`,
-    host: {
-        class: 'min-h-screen flex items-center justify-center bg-slate-100 p-4',
-    },
+  host: {
+    class: 'min-h-screen flex items-center justify-center bg-slate-100 p-4',
+  },
 })
 export class Login {
 
-    loginModel = signal({ username: '', password: '' });
+  private readonly store = inject(Store);
+  readonly isLoading = toSignal(this.store.select(authFeature.selectIsLoading));
 
-    loginForm = form(this.loginModel, (rootPath) => {
-        required(rootPath.username, { message: "Username is required" })
-        required(rootPath.password, { message: "password is required" })
-        minLength(rootPath.password, 6, { message: "Password must be at least 6 characters long" })
-    });
+  loginModel = signal({ username: '', password: '' });
 
-    onSubmit(event: Event) {
-        event.preventDefault();
-        if (this.loginForm().valid()) {
-            console.log(this.loginForm().value());
-        }
+  loginForm = form(this.loginModel, (rootPath) => {
+    required(rootPath.username, { message: "Username is required" })
+    required(rootPath.password, { message: "password is required" })
+    minLength(rootPath.password, 6, { message: "Password must be at least 6 characters long" })
+  });
+
+  onSubmit(event: Event) {
+    event.preventDefault();
+    if (this.loginForm().valid()) {
+      this.store.dispatch(authActions.login(this.loginForm().value()));
     }
+  }
 }
