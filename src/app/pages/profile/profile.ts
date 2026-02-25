@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from "@angular/core";
-import { LucideAngularModule } from 'lucide-angular';
+import { LucideAngularModule, Mail, MapPin, Phone, User } from 'lucide-angular';
 
 @Component({
     selector: 'app-profile',
@@ -32,7 +32,7 @@ import { LucideAngularModule } from 'lucide-angular';
           <div class="space-y-4">
             <div class="flex items-center gap-3">
               <div class="size-10 rounded-lg bg-indigo-100 flex items-center justify-center">
-                <!-- <lucide-icon [img]="icons.Mail" class="size-5 text-indigo-600" /> -->
+                <lucide-icon [img]="icons.Mail" class="size-5 text-indigo-600" />
               </div>
               <div>
                 <p class="text-sm text-slate-500">Email</p>
@@ -42,7 +42,7 @@ import { LucideAngularModule } from 'lucide-angular';
 
             <div class="flex items-center gap-3">
               <div class="size-10 rounded-lg bg-green-100 flex items-center justify-center">
-                <!-- <lucide-icon [img]="icons.Phone" class="size-5 text-green-600" /> -->
+                <lucide-icon [img]="icons.Phone" class="size-5 text-green-600" />
               </div>
               <div>
                 <p class="text-sm text-slate-500">Phone</p>
@@ -52,7 +52,7 @@ import { LucideAngularModule } from 'lucide-angular';
 
             <div class="flex items-center gap-3">
               <div class="size-10 rounded-lg bg-amber-100 flex items-center justify-center">
-                <!-- <lucide-icon [img]="icons.User" class="size-5 text-amber-600" /> -->
+                <lucide-icon [img]="icons.User" class="size-5 text-amber-600" />
               </div>
               <div>
                 <p class="text-sm text-slate-500">Username</p>
@@ -67,7 +67,7 @@ import { LucideAngularModule } from 'lucide-angular';
           <h3 class="text-lg font-semibold text-slate-900 mb-4">Address</h3>
           <div class="flex items-start gap-3">
             <div class="size-10 rounded-lg bg-rose-100 flex items-center justify-center shrink-0">
-              <!-- <lucide-icon [img]="icons.MapPin" class="size-5 text-rose-600" /> -->
+              <lucide-icon [img]="icons.MapPin" class="size-5 text-rose-600" />
             </div>
             <div>
               <p class="font-medium text-slate-900 capitalize">
@@ -86,11 +86,11 @@ import { LucideAngularModule } from 'lucide-angular';
 })
 export class Profile {
 
-    // readonly icons = {
-    //     Mail: MailIcon,
-    //     Phone: PhoneIcon,
-    //     User: UserIcon,
-    //     MapPin: MapPinIcon
-    // };
+    readonly icons = {
+        Mail: Mail,
+        Phone: Phone,
+        User: User,
+        MapPin: MapPin
+    };
 
 }
