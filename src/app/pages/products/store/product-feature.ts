@@ -5,12 +5,14 @@ import { productActions } from "./product-actions";
 
 export type ProductState = {
     products: Product[];
+    filteredProducts: Product[];
     error: string | null;
     isLoading: boolean;
 }
 
 export const initialState: ProductState = {
     products: [],
+    filteredProducts: [],
     error: null,
     isLoading: false
 }
@@ -33,6 +35,11 @@ export const productFeature = createFeature({
             ...state,
             error,
             isLoading: false
+        })),
+        on(productActions.search, (state, { searchQuery }) => ({
+            ...state,
+            searchQuery,
+            filteredProducts: state.products.filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()))
         }))
     )
 })

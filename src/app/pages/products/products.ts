@@ -14,6 +14,7 @@ import { productFeature } from "./store/product-feature";
         <h1 class="text-3xl font-bold text-slate-900 mb-8">Products</h1>
         <div class="search">
           <input
+          (input)="onSearch($event)"
             class="w-72 p-2 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-slate-500"
             type="text"
             placeholder="Search products..."
@@ -42,9 +43,8 @@ import { productFeature } from "./store/product-feature";
 export class Products implements OnInit {
 
     private readonly store = inject(Store);
-    readonly products = toSignal(this.store.select(productFeature.selectProducts));
+    readonly products = toSignal(this.store.select(productFeature.selectFilteredProducts));
     readonly isLoading = toSignal(this.store.select(productFeature.selectIsLoading));
-    readonly error = toSignal(this.store.select(productFeature.selectError));
 
     ngOnInit(): void {
         this.loadProducts();
@@ -52,5 +52,10 @@ export class Products implements OnInit {
 
     loadProducts() {
         this.store.dispatch(productActions.load());
+    }
+
+    onSearch(event: Event) {
+        const searchQuery = (event.target as HTMLInputElement).value;
+        this.store.dispatch(productActions.search({ searchQuery }));
     }
 }

@@ -8,5 +8,7 @@ export const productActions = createActionGroup({
         load: emptyProps(),
         loadSuccess: props<{ products: Product[] }>(),
         loadFailure: props<{ error: any }>(),
+
+        search: props<{ searchQuery: string }>(),
     }
 })
