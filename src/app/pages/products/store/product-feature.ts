@@ -28,6 +28,7 @@ export const productFeature = createFeature({
         on(productActions.loadSuccess, (state, { products }) => ({
             ...state,
             products,
+            filteredProducts: products,
             isLoading: false,
             error: null
         })),
