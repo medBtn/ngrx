@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { extractToken } from "../util/extractToken";
 
 @Injectable({
     providedIn: 'root'
@@ -18,5 +19,14 @@ export class Storage {
     }
     clear() {
         localStorage.clear();
+    }
+
+    getUserId(): number | null {
+        const token = this.getItem('ngrx_token');
+        if (!token) {
+            return null;
+        }
+        const payload = extractToken(token);
+        return payload ? payload.sub : null;
     }
 }
