@@ -1,11 +1,22 @@
-import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject, OnInit } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
+import { Store } from "@ngrx/store";
 import { LucideAngularModule, Mail, MapPin, Phone, User } from 'lucide-angular';
+import { Storage } from "../../shared/services/storage";
+import { authFeature } from "../../shared/store/auth-feature";
+import { profileActions } from "./store/profile-actions";
+import { profileFeature } from "./store/profile-feature";
 
 @Component({
-    selector: 'app-profile',
-    imports: [LucideAngularModule],
-    template: `<div class="py-8 max-w-4xl mx-auto">
+  selector: 'app-profile',
+  imports: [LucideAngularModule],
+  template: `<div class="py-8 max-w-4xl mx-auto">
     <h1 class="text-3xl font-bold text-slate-900 mb-8">My Profile</h1>
+    @if(isLoading()) {
+    <div class="flex items-center justify-center">
+      <p>Loading profile...</p>
+    </div>
+    } @else if(profile()) { @let userProfile = profile();
     <div class="grid gap-6 md:grid-cols-3">
       <!-- Profile Card -->
       <div class="md:col-span-1">
@@ -14,13 +25,13 @@ import { LucideAngularModule, Mail, MapPin, Phone, User } from 'lucide-angular';
             class="size-24 mx-auto mb-4 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center"
           >
             <span class="text-3xl font-bold text-white uppercase">
-            first name
-        </span>
+              {{ (userProfile?.name)!.firstname[0] }}{{ (userProfile?.name)!.lastname[0] }}
+            </span>
           </div>
           <h2 class="text-xl font-semibold text-slate-900 capitalize">
-            first name last name
+            {{ (userProfile?.name)!.firstname }} {{ (userProfile?.name)!.lastname }}
           </h2>
-          <p class="text-slate-500">&#64;username</p>
+          <p class="text-slate-500">&#64;{{ userProfile?.username }}</p>
         </div>
       </div>
 
@@ -36,7 +47,7 @@ import { LucideAngularModule, Mail, MapPin, Phone, User } from 'lucide-angular';
               </div>
               <div>
                 <p class="text-sm text-slate-500">Email</p>
-                <p class="font-medium text-slate-900">email</p>
+                <p class="font-medium text-slate-900">{{ userProfile?.email }}</p>
               </div>
             </div>
 
@@ -46,7 +57,7 @@ import { LucideAngularModule, Mail, MapPin, Phone, User } from 'lucide-angular';
               </div>
               <div>
                 <p class="text-sm text-slate-500">Phone</p>
-                <p class="font-medium text-slate-900">phone</p>
+                <p class="font-medium text-slate-900">{{ userProfile?.phone }}</p>
               </div>
             </div>
 
@@ -56,7 +67,7 @@ import { LucideAngularModule, Mail, MapPin, Phone, User } from 'lucide-angular';
               </div>
               <div>
                 <p class="text-sm text-slate-500">Username</p>
-                <p class="font-medium text-slate-900">username</p>
+                <p class="font-medium text-slate-900">{{ userProfile?.username }}</p>
               </div>
             </div>
           </div>
@@ -71,26 +82,42 @@ import { LucideAngularModule, Mail, MapPin, Phone, User } from 'lucide-angular';
             </div>
             <div>
               <p class="font-medium text-slate-900 capitalize">
-                street
+                {{ userProfile?.address?.street }}
               </p>
               <p class="text-slate-500 capitalize">
-                city, zipcode
+                {{ userProfile?.address?.city }}, {{ userProfile?.address?.zipcode }}
               </p>
             </div>
           </div>
         </div>
       </div>
     </div>
+    }
   </div>`,
-    changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Profile {
+export class Profile implements OnInit {
 
-    readonly icons = {
-        Mail: Mail,
-        Phone: Phone,
-        User: User,
-        MapPin: MapPin
-    };
+  readonly icons = {
+    Mail: Mail,
+    Phone: Phone,
+    User: User,
+    MapPin: MapPin
+  };
+
+  private readonly store = inject(Store);
+  protected readonly storage: Storage = inject(Storage);
+
+  protected readonly profile = toSignal(this.store.select(profileFeature.selectProfile))
+  protected readonly isLoading = toSignal(this.store.select(profileFeature.selectIsLoading))
+  protected readonly userId = toSignal(this.store.select(authFeature.selectUserId))
+
+  ngOnInit(): void {
+    const userId = this.userId() || this.storage.getUserId();
+
+    if (userId) {
+      this.store.dispatch(profileActions.load({ userId }));
+    }
+  }
 
 }
