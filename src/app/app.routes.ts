@@ -3,6 +3,8 @@ import { provideEffects } from '@ngrx/effects';
 import { provideState } from '@ngrx/store';
 import * as productEffect from './pages/products/store/product-effect';
 import { productFeature } from './pages/products/store/product-feature';
+import * as profileEffect from './pages/profile/store/profile-effect';
+import { profileFeature } from './pages/profile/store/profile-feature';
 
 export const routes: Routes = [
     {
@@ -36,7 +38,8 @@ export const routes: Routes = [
             },
             {
                 path: 'profile',
-                loadComponent: () => import('./pages/profile/profile').then((m) => m.Profile)
+                loadComponent: () => import('./pages/profile/profile').then((m) => m.Profile),
+                providers: [provideState(profileFeature), provideEffects(profileEffect)]
             }
         ]
     }
